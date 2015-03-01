@@ -12,6 +12,7 @@
 
 '''
 import sys
+import hashlib
 
 _subsets = list()
 
@@ -79,7 +80,7 @@ def generate_candidate_set(freq_item, k, hmap):
     for i in range(0, len(freq_item)-1):
         for j in range(i+1, len(freq_item)):
             new_candidate = set_join(freq_item[i], freq_item[j])
-            if len(new_candidate) == k and hmap[get_bitmap_key(new_candidate, len(hmap))] == 1:
+            if len(new_candidate) == k and hmap[_hash_str2idx(new_candidate, len(hmap))] == 1:
                 candidate_set.append(new_candidate)
     candidate_set = remove_duplicate(candidate_set)
     if k>2:
@@ -143,7 +144,7 @@ def find_freq_item(log_path, candidate_set, k, support, hmap):
         get_ksubset(items, k)
         if len(_subsets)>0:
             for e in _subsets:
-                hmap[get_bitmap_key(e, len(hmap))]+=1
+                hmap[_hash_str2idx(e, len(hmap))]+=1
         _subsets = list()
 
     handler.close()
@@ -154,9 +155,9 @@ def find_freq_item(log_path, candidate_set, k, support, hmap):
             freq_set.append(key2set(key))
     return freq_set, hmap
 
-def get_bitmap_key(itemset, length):
+def _hash_str2idx(itemset, length):
     assert type(itemset) == type(list())
-    result = abs(hash(get_key(itemset)))
+    result = 8
     return result%length
 
 def main():
